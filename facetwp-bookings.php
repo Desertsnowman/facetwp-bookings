@@ -152,6 +152,16 @@ class FacetWP_Facet_Availability
                     // Returns WP_Error on fail
                     if ( true === $booking_form->is_bookable( $posted_data ) ) {
                         $matches[] = $post_id;
+                    }elseif( 'exact' !== $behavior ){
+                        $blocks_in_range  = $booking_form->product->get_blocks_in_range( strtotime( $start_date_raw ), strtotime( $end_date_raw ) );
+                        $available_blocks = $booking_form->product->get_available_blocks( $blocks_in_range );                        
+                        foreach( $available_blocks as $check ){
+                            if( true === $booking_form->product->check_availability_rules_against_date( $check, '' ) ){
+                                // required only a single true to be valid.
+                                $matches[] = $post_id;
+                                break;
+                            }
+                        }                     
                     }
                 }
             }
